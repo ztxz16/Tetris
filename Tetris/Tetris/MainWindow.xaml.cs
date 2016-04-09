@@ -20,10 +20,28 @@ namespace Tetris
     /// </summary>
     public partial class MainWindow : Window
     {
+        Brush blueBrush = new SolidColorBrush(Colors.DarkBlue);
+        Brush blackBrush = new SolidColorBrush(Colors.Black);
+
         public MainWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
+        }
+
+        private void exit_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            App.Current.Shutdown();
+        }
+
+        private void exit_MouseEnter(object sender, MouseEventArgs e)
+        {
+            (sender as TextBlock).Foreground = blueBrush;
+        }
+
+        private void exit_MouseLeave(object sender, MouseEventArgs e)
+        {
+            (sender as TextBlock).Foreground = blackBrush;
         }
     }
 }
