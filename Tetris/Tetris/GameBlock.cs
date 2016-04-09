@@ -11,10 +11,18 @@ namespace Tetris
 {
     class GameBlock
     {
+        static public int[] sizes = {3 };
+        static public string[] fills = {"010111000" };
+
         public int[,] block;
         public int size;
-
+        
         List<Rectangle> rects = new List<Rectangle>();
+
+        static public GameBlock NewBlock(int id)
+        {
+            return (new GameBlock(sizes[id], fills[id]));
+        }
 
         public GameBlock(int _size, string fill)
         {
@@ -30,7 +38,7 @@ namespace Tetris
             }
         }
 
-        public void rotate()
+        public void Rotate()
         {
             int[,] temp = new int[size, size];
             for (int i = 0; i < size; i++)
@@ -50,10 +58,10 @@ namespace Tetris
             }
         }
 
-        public void draw(Canvas canvas, GameBoard board, Brush fillBrush, Brush edgeBrush, int top, int left)
+        public void Draw(Canvas canvas, GameBoard board, Brush fillBrush, Brush edgeBrush, int top, int left)
         {
-            double heightUnit = canvas.Height / Convert.ToDouble(board.row);
-            double widthUnit = canvas.Width / Convert.ToDouble(board.column);
+            double heightUnit = canvas.ActualHeight / Convert.ToDouble(board.row);
+            double widthUnit = canvas.ActualWidth / Convert.ToDouble(board.column);
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
@@ -63,6 +71,8 @@ namespace Tetris
                         Rectangle rectNow = new Rectangle();
                         rectNow.Height = heightUnit;
                         rectNow.Width = widthUnit;
+                        rectNow.Fill = fillBrush;
+                        rectNow.Stroke = edgeBrush;
                         Canvas.SetTop(rectNow, (top + i) * heightUnit);
                         Canvas.SetLeft(rectNow, (left + j) * widthUnit);
                         rects.Add(rectNow);
@@ -72,7 +82,7 @@ namespace Tetris
             } 
         }
 
-        public void remove(Canvas canvas)
+        public void Remove(Canvas canvas)
         {
             foreach (Rectangle it in rects)
                 canvas.Children.Remove(it);

@@ -22,11 +22,14 @@ namespace Tetris
     {
         Brush blueBrush = new SolidColorBrush(Colors.DarkBlue);
         Brush blackBrush = new SolidColorBrush(Colors.Black);
+        GameBoard board;
 
         public MainWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
+
+            board = new GameBoard(20, 10, this);
         }
 
         private void exit_MouseUp(object sender, MouseButtonEventArgs e)
@@ -34,14 +37,19 @@ namespace Tetris
             App.Current.Shutdown();
         }
 
-        private void exit_MouseEnter(object sender, MouseEventArgs e)
+        private void button_MouseEnter(object sender, MouseEventArgs e)
         {
             (sender as TextBlock).Foreground = blueBrush;
         }
 
-        private void exit_MouseLeave(object sender, MouseEventArgs e)
+        private void button_MouseLeave(object sender, MouseEventArgs e)
         {
             (sender as TextBlock).Foreground = blackBrush;
+        }
+
+        private void start_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            board.Start();
         }
     }
 }
