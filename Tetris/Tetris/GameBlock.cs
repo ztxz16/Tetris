@@ -13,8 +13,8 @@ namespace Tetris
     {
         static Random random = new Random();
 
-        static public int[] sizes = {3 };
-        static public string[] fills = {"010111000" };
+        static public int[] sizes = {3, 2, 3, 3, 4};
+        static public string[] fills = {"010111000", "1111", "111001000", "111100000", "0000111100000000" };
 
         public int[,] block;
         public int size;
@@ -61,10 +61,10 @@ namespace Tetris
             }
         }
 
-        public void Draw(Canvas canvas, GameBoard board, Brush fillBrush, Brush edgeBrush, int top, int left)
+        public void Draw(Canvas canvas, int row, int column, Brush fillBrush, Brush edgeBrush, int top, int left)
         {
-            double heightUnit = canvas.ActualHeight / Convert.ToDouble(board.row);
-            double widthUnit = canvas.ActualWidth / Convert.ToDouble(board.column);
+            double heightUnit = canvas.ActualHeight / Convert.ToDouble(row);
+            double widthUnit = canvas.ActualWidth / Convert.ToDouble(column);
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)

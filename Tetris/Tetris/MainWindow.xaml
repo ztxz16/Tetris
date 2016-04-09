@@ -48,9 +48,11 @@
                 <TextBlock x:Name="score" FontSize="25"/>
             </Grid>
 
-            <Canvas x:Name="nextBlockCanvas" Grid.Row="2">
-                
-            </Canvas>
+            <Grid Grid.Row="2">
+                <Canvas x:Name="nextBlockCanvas" Margin="10, 70, 10, 70">
+                    
+                </Canvas>
+            </Grid>
 
             <Grid Grid.Row="3">
                 <TextBlock x:Name="start"  FontSize="40" Margin="10, 120, 0, 130" MouseUp="start_MouseUp" MouseEnter="button_MouseEnter" MouseLeave="button_MouseLeave">

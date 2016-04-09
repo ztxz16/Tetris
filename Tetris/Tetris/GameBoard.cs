@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,17 +15,17 @@ namespace Tetris
     class GameBoard
     {
         static public int initInterval = 1000;
-        static public int gapInterval = 2;
+        static public int gapInterval = 5;
         static public int minInterval = 50;
 
         static public Brush fillBrush1 = Brushes.Blue;
-        static public Brush fillBrush2 = Brushes.AliceBlue;
+        static public Brush fillBrush2 = Brushes.Green;
         static public Brush edgeBrush1 = Brushes.Blue;
-        static public Brush edgeBrush2 = Brushes.AliceBlue;
+        static public Brush edgeBrush2 = Brushes.Green;
 
         private MainWindow mainWindow;
 
-        public int score;
+        public int score, highScore;
         public int[,] board;
         public int row, column, top, left;
         public GameBlock nextBlock, nowBlock;
@@ -102,7 +103,9 @@ namespace Tetris
                     top = 0;
                     left = column / 2 - nowBlock.size / 2;
 
+                    nextBlock.Remove(mainWindow.nextBlockCanvas);
                     nextBlock = GameBlock.NewBlock();
+                    nextBlock.Draw(mainWindow.nextBlockCanvas, 6, 6, fillBrush1, edgeBrush1, 1, 1);
 
                     UpdateBoard();
                     
@@ -111,10 +114,11 @@ namespace Tetris
                         timer.Stop();
                         MessageBox.Show("游戏结束");
                         nowBlock = null;
+                        File.WriteAllText("score", highScore.ToString());
                         Clear();
                     } else
                     {
-                        nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+                        nowBlock.Draw(mainWindow.gameCanvas, row, column, fillBrush1, edgeBrush1, top, left);
                         //更新interval
                         timer.Stop();
                         timer.Interval = Math.Max(minInterval, initInterval - score * gapInterval);
@@ -145,6 +149,7 @@ namespace Tetris
                 if (isFull)
                 {
                     score++;
+                    highScore = Math.Max(highScore, score);
                     for (int k = i; k > 0; k--)
                     {
                         for (int j = 0; j < column; j++)
@@ -157,6 +162,7 @@ namespace Tetris
             }
 
             Draw();
+            mainWindow.highScore.Text = "最高分:\n" + highScore.ToString();
             mainWindow.score.Text = "得分:\n" + score.ToString();
         }
 
@@ -168,6 +174,8 @@ namespace Tetris
             timer.Stop();
             if (nowBlock != null)
                 nowBlock.Remove(mainWindow.gameCanvas);
+            if (nextBlock != null)
+                nextBlock.Remove(mainWindow.nextBlockCanvas);
             random = new Random();
             Clear();
 
@@ -177,10 +185,17 @@ namespace Tetris
             top = 0;
             left = column / 2 - nowBlock.size / 2;
 
-            nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+            nowBlock.Draw(mainWindow.gameCanvas, row, column, fillBrush1, edgeBrush1, top, left);
+            nextBlock.Draw(mainWindow.nextBlockCanvas, 6, 6, fillBrush1, edgeBrush1, 1, 1);
 
             score = 0;
-            mainWindow.highScore.Text = "最高分:\n" + 1000.ToString();
+            if (!File.Exists("score"))
+                highScore = 0;
+            else
+            {
+                Int32.TryParse(File.ReadAllText("score"), out highScore);
+            }
+            mainWindow.highScore.Text = "最高分:\n" + highScore.ToString();
             mainWindow.score.Text = "得分:\n" + score.ToString();
 
             timer.Interval = initInterval;
@@ -239,7 +254,7 @@ namespace Tetris
                 {
                     left--;
                     nowBlock.Remove(mainWindow.gameCanvas);
-                    nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+                    nowBlock.Draw(mainWindow.gameCanvas, row, column, fillBrush1, edgeBrush1, top, left);
                     return true;
                 }
                 else
@@ -258,7 +273,7 @@ namespace Tetris
                 {
                     left++;
                     nowBlock.Remove(mainWindow.gameCanvas);
-                    nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+                    nowBlock.Draw(mainWindow.gameCanvas, row, column, fillBrush1, edgeBrush1, top, left);
                     return true;
                 }
                 else
@@ -278,7 +293,7 @@ namespace Tetris
                 {
                     top++;
                     nowBlock.Remove(mainWindow.gameCanvas);
-                    nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+                    nowBlock.Draw(mainWindow.gameCanvas, row, column, fillBrush1, edgeBrush1, top, left);
                     return true;
                 }
                 else
@@ -297,7 +312,7 @@ namespace Tetris
                 if (CanInsert(nowBlock, top, left))
                 {
                     nowBlock.Remove(mainWindow.gameCanvas);
-                    nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+                    nowBlock.Draw(mainWindow.gameCanvas, row, column, fillBrush1, edgeBrush1, top, left);
                     return true;
                 }
                 else
