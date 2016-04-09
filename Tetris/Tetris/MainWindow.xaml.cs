@@ -51,5 +51,13 @@ namespace Tetris
         {
             board.Start();
         }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.A || e.Key == Key.Left)
+                board.MoveToLeft();
+            if (e.Key == Key.D || e.Key == Key.Right)
+                board.MoveToRight();
+        }
     }
 }
