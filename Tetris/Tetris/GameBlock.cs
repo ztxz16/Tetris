@@ -11,6 +11,8 @@ namespace Tetris
 {
     class GameBlock
     {
+        static Random random = new Random();
+
         static public int[] sizes = {3 };
         static public string[] fills = {"010111000" };
 
@@ -19,8 +21,9 @@ namespace Tetris
         
         List<Rectangle> rects = new List<Rectangle>();
 
-        static public GameBlock NewBlock(int id)
+        static public GameBlock NewBlock()
         {
+            int id = random.Next() % sizes.Count();
             return (new GameBlock(sizes[id], fills[id]));
         }
 
@@ -53,7 +56,7 @@ namespace Tetris
             {
                 for (int j = 0; j < size; j++)
                 {
-                    block[i, j] = temp[size - j, i];
+                    block[i, j] = temp[j, size - 1 - i];
                 }
             }
         }

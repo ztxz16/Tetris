@@ -34,6 +34,7 @@ namespace Tetris
 
         private void exit_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            board.StopTimer();
             App.Current.Shutdown();
         }
 
@@ -58,6 +59,8 @@ namespace Tetris
                 board.MoveToLeft();
             if (e.Key == Key.D || e.Key == Key.Right)
                 board.MoveToRight();
+            if (e.Key == Key.W || e.Key == Key.Up)
+                board.Rotate();
         }
     }
 }

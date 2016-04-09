@@ -41,11 +41,11 @@
             </Grid.Background>
 
             <Grid Grid.Row="0">
-                <TextBlock x:Name="highScore" FontSize="30"/>
+                <TextBlock x:Name="highScore" FontSize="25"/>
             </Grid>
 
             <Grid Grid.Row="1">
-                <TextBlock x:Name="score" FontSize="30"/>
+                <TextBlock x:Name="score" FontSize="25"/>
             </Grid>
 
             <Canvas x:Name="nextBlockCanvas" Grid.Row="2">

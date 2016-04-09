@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -12,19 +13,29 @@ namespace Tetris
 {
     class GameBoard
     {
+        static public int initInterval = 100;
+
         static public Brush fillBrush1 = Brushes.Blue;
-        static public Brush fillBrush2 = Brushes.White;
+        static public Brush fillBrush2 = Brushes.AliceBlue;
         static public Brush edgeBrush1 = Brushes.Blue;
-        static public Brush edgeBrush2 = Brushes.White;
+        static public Brush edgeBrush2 = Brushes.AliceBlue;
 
         private MainWindow mainWindow;
 
+        public int score;
         public int[,] board;
         public int row, column, top, left;
         public GameBlock nextBlock, nowBlock;
         Random random = new Random();
 
+        Timer timer = new Timer(initInterval);
+
         List<Rectangle> rects = new List<Rectangle>();
+
+        public void StopTimer()
+        {
+            timer.Stop();
+        }
 
         private void Remove()
         {
@@ -36,7 +47,7 @@ namespace Tetris
         private void Draw()
         {
             double heightUnit = mainWindow.gameCanvas.ActualHeight / Convert.ToDouble(row);
-            double widthUnit = mainWindow.ActualWidth / Convert.ToDouble(column);
+            double widthUnit = mainWindow.gameCanvas.ActualWidth / Convert.ToDouble(column);
             for (int i = 0; i < row; i++)
             {
                 for (int j = 0; j < column; j++)
@@ -71,25 +82,74 @@ namespace Tetris
             column = _column;
             board = new int[row, column];
             mainWindow = _mainWindow;
+            timer.Elapsed += Timer_Elapsed;
         }
 
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            mainWindow.Dispatcher.Invoke(new Action(() =>
+            {
+                if (MoveDown())
+                    return;
+                else
+                {
+                    //下落完成
+                    Insert(nowBlock, top, left);
+
+                    nowBlock = nextBlock;
+                    top = 0;
+                    left = column / 2 - nowBlock.size / 2;
+
+                    nextBlock = GameBlock.NewBlock();
+
+                    UpdateBoard();
+                    
+                    if (!CanInsert(nowBlock, top, left))
+                    {
+                        timer.Stop();
+                        MessageBox.Show("游戏结束");
+                        nowBlock = null;
+                        Clear();
+                    } else
+                    {
+                        nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+                    }
+                }
+            }));
+        }
+
+        /// <summary>
+        /// 刷新board
+        /// </summary>
+        public void UpdateBoard()
+        {
+            Draw();
+        }
         /// <summary>
         /// 开始游戏
         /// </summary>
         public void Start()
         {
+            timer.Stop();
             if (nowBlock != null)
                 nowBlock.Remove(mainWindow.gameCanvas);
             random = new Random();
             Clear();
 
-            nowBlock = GameBlock.NewBlock(random.Next() % GameBlock.sizes.Count());
-            nextBlock = GameBlock.NewBlock(random.Next() % GameBlock.sizes.Count());
+            nowBlock = GameBlock.NewBlock();
+            nextBlock = GameBlock.NewBlock();
 
             top = 0;
             left = column / 2 - nowBlock.size / 2;
 
             nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+
+            score = 0;
+            mainWindow.highScore.Text = "最高分:\n" + 1000.ToString();
+            mainWindow.score.Text = "得分:\n" + score.ToString();
+
+            timer.Interval = initInterval;
+            timer.Start();
         }
 
         /// <summary>
@@ -122,9 +182,12 @@ namespace Tetris
             {
                 for (int j = 0; j < block.size; j++)
                 {
-                    board[top + i, left + j] = 1;
+                    if (block.block[i, j] == 1)
+                        board[top + i, left + j] = 1;
                 }
             }
+
+            block.Remove(mainWindow.gameCanvas);
         }
 
         /// <summary>
@@ -162,6 +225,50 @@ namespace Tetris
                 }
                 else
                     return false;
+            }
+        }
+
+        /// <summary>
+        /// 把nowBlock下移
+        /// </summary>
+
+        public bool MoveDown()
+        {
+            lock (nowBlock)
+            {
+                if (CanInsert(nowBlock, top + 1, left))
+                {
+                    top++;
+                    nowBlock.Remove(mainWindow.gameCanvas);
+                    nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// 把nowBlock翻转
+        /// </summary>
+        public bool Rotate()
+        {
+            lock (nowBlock)
+            {
+                nowBlock.Rotate();
+                if (CanInsert(nowBlock, top, left))
+                {
+                    nowBlock.Remove(mainWindow.gameCanvas);
+                    nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+                    return true;
+                }
+                else
+                {
+                    nowBlock.Rotate();
+                    nowBlock.Rotate();
+                    nowBlock.Rotate();
+                    return false;
+                }
             }
         }
     }
