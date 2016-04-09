@@ -13,7 +13,9 @@ namespace Tetris
 {
     class GameBoard
     {
-        static public int initInterval = 100;
+        static public int initInterval = 1000;
+        static public int gapInterval = 2;
+        static public int minInterval = 50;
 
         static public Brush fillBrush1 = Brushes.Blue;
         static public Brush fillBrush2 = Brushes.AliceBlue;
@@ -113,6 +115,10 @@ namespace Tetris
                     } else
                     {
                         nowBlock.Draw(mainWindow.gameCanvas, this, fillBrush1, edgeBrush1, top, left);
+                        //更新interval
+                        timer.Stop();
+                        timer.Interval = Math.Max(minInterval, initInterval - score * gapInterval);
+                        timer.Start();
                     }
                 }
             }));
@@ -123,8 +129,37 @@ namespace Tetris
         /// </summary>
         public void UpdateBoard()
         {
+            Remove();
+            for (int i = 0; i < row; i++)
+            {
+                bool isFull = true;
+                for (int j = 0; j < column; j++)
+                {
+                    if (board[i, j] == 0)
+                    {
+                        isFull = false;
+                        break;
+                    }
+                }
+
+                if (isFull)
+                {
+                    score++;
+                    for (int k = i; k > 0; k--)
+                    {
+                        for (int j = 0; j < column; j++)
+                            board[k, j] = board[k - 1, j];
+                    }
+
+                    for (int j = 0; j < column; j++)
+                        board[0, j] = 0;
+                }
+            }
+
             Draw();
+            mainWindow.score.Text = "得分:\n" + score.ToString();
         }
+
         /// <summary>
         /// 开始游戏
         /// </summary>
@@ -178,16 +213,19 @@ namespace Tetris
         /// </summary>
         public void Insert(GameBlock block, int top, int left)
         {
-            for (int i = 0; i < block.size; i++)
+            lock (block)
             {
-                for (int j = 0; j < block.size; j++)
+                for (int i = 0; i < block.size; i++)
                 {
-                    if (block.block[i, j] == 1)
-                        board[top + i, left + j] = 1;
+                    for (int j = 0; j < block.size; j++)
+                    {
+                        if (block.block[i, j] == 1)
+                            board[top + i, left + j] = 1;
+                    }
                 }
-            }
 
-            block.Remove(mainWindow.gameCanvas);
+                block.Remove(mainWindow.gameCanvas);
+            }
         }
 
         /// <summary>
@@ -270,6 +308,16 @@ namespace Tetris
                     return false;
                 }
             }
+        }
+
+        /// <summary>
+        /// 加速下落
+        /// </summary>
+        public void FastDown()
+        {
+            timer.Stop();
+            timer.Interval = minInterval;
+            timer.Start();
         }
     }
 }

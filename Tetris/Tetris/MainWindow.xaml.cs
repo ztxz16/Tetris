@@ -61,6 +61,8 @@ namespace Tetris
                 board.MoveToRight();
             if (e.Key == Key.W || e.Key == Key.Up)
                 board.Rotate();
+            if (e.Key == Key.S || e.Key == Key.Down)
+                board.FastDown();
         }
     }
 }
