@@ -5,8 +5,58 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tetris"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="俄罗斯方块" Height="800" Width="600" ResizeMode="NoResize">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+
+        <Canvas x:Name="gameCanvas" Grid.Column="0">
+            <Canvas.Background>
+                <LinearGradientBrush>
+                    <GradientStopCollection>
+                        <GradientStop Offset="0" Color="Black" />
+                        <GradientStop Offset="0.5" Color="Gray"  />
+                    </GradientStopCollection>
+                </LinearGradientBrush>
+            </Canvas.Background>
+        </Canvas>
+
+        <Grid x:Name="controlGrid" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="4*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Background>
+                <LinearGradientBrush>
+                    <GradientStopCollection>
+                        <GradientStop Offset="0" Color="AliceBlue" />
+                        <GradientStop Offset="0.5" Color="LightBlue"  />
+                    </GradientStopCollection>
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <Grid Grid.Row="0">
+                <TextBlock x:Name="highScore" FontSize="30"/>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <TextBlock x:Name="score" FontSize="30"/>
+            </Grid>
+
+            <Canvas x:Name="nextBlockCanvas" Grid.Row="2">
+                
+            </Canvas>
+
+            <Grid Grid.Row="3">
+                <TextBlock x:Name="exit"  FontSize="40" Margin="10, 220, 0, 0">
+                    退出游戏
+                </TextBlock>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>
